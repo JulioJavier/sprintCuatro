@@ -25,7 +25,7 @@ const RestaurantCard = ({ category }) => {
 <div
   onClick={() => handleClick(restaurant)}
   key={restaurant.id}
-  className="flex flex-col sm:flex-row m-4 p-4 rounded-lg shadow-md cursor-pointer max-w-sm sm:max-w-md lg:max-w-lg"
+  className="flex flex-col sm:flex-row m-4 p-4 rounded-lg shadow-md cursor-pointer max-w-sm lg:max-w-lg"
 >
   <div className="relative w-full sm:w-48 h-full rounded-l-lg sm:rounded-r-none overflow-hidden">
     <img

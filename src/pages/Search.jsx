@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import Navbar from "../layout/Navbar";
 import { useData } from "../context/DataContext";
-
+import { useNavigate } from "react-router-dom";
+import { useInfo } from "../context/HandleInfoContext";
 const Search = () => {
   const { findCategory } = useData();
   const [categoryToSearch, setCategoryToSearch] = useState("");
   const [dishesObtained, setDishesObtained] = useState([]);
-  const [submitted, setSubmitted] = useState(false); // nueva variable de estado
+  const [submitted, setSubmitted] = useState(false); // Variable para saber si se econtró el palto a buscar
+  const { setRestaurantSelected, setrestaurantToSend, setProductSelected } =
+    useInfo();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setCategoryToSearch(e.target.value.toLowerCase().trim());
@@ -22,18 +26,28 @@ const Search = () => {
     await searchDishes();
     setSubmitted(true); // establecer submitted en true después de hacer clic en enviar
   };
-
   const filteredDishes = dishesObtained.reduce((acc, curr) => {
     const filtered = curr.menu.filter(
       (dish) => dish.category === categoryToSearch
     );
     const filteredProperties = filtered.map((dish) => ({
-      name: dish.name,
-      image: dish.image,
-      price: dish.price,
+      name: dish.name, // agregar el nombre del plato al objeto
+      image: dish.image, // agregar la imagen del plato al objeto
+      price: dish.price, //  agregar el precio del plato al objeto
+      idItem: dish.idItem, // agregar el id del plato al objeto
+      cookingTimeMin: dish.cookingTimeMin, // agregar el tiempo de preparación mínimo del plato al objeto
+      cookingTimeMax: dish.cookingTimeMax, // agregar el tiempo de preparación máximo del plato al objeto
+      curr: curr, // agregar el restaurante actual al objeto
     }));
     return [...acc, ...filteredProperties];
   }, []);
+
+  const handleClick = (obj) => {
+    setrestaurantToSend(obj.curr); // establecer el restaurante seleccionado en el contexto
+    setProductSelected(obj); // establecer el plato seleccionado en el contexto
+    setRestaurantSelected(obj.curr); // establecer el restaurante seleccionado en el contexto
+    navigate("/product");
+  };
 
   return (
     <div className="flex flex-col w-screen h-screen items-center justify-center pb-10">
@@ -74,10 +88,11 @@ const Search = () => {
             Search
           </button>
         </form>
-        <div className="flex flex-col justify-center items-center mt-2" onClick={handleClick}>
+        <div className="flex flex-col justify-center items-center mt-2">
           {submitted && filteredDishes.length
             ? filteredDishes.map((dish) => (
                 <div
+                  onClick={() => handleClick(dish)} // al hacer clic en un plato, se establece el restaurante seleccionado en el contexto
                   className="flex w-full h-14 justify-item items-center gap-2 ml-14"
                   key={dish.name}
                 >

@@ -1,36 +1,34 @@
-import React, { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-import { Alert } from "../components/Alert";
-import { useInfo } from "../context/HandleInfoContext";
-
+import React, { useState } from 'react';
+import { Alert } from '../components/Alert';
+import { useInfo } from '../context/HandleInfoContext';
+import { useNavigate } from 'react-router-dom';
 const Product = () => {
-  const navigate = useNavigate();
-  const { productSelected, restaurantToSend } = useInfo();
+  const { productSelected, restaurantToSend, setpayCheck} = useInfo();
   const [quantity, setQuantity] = useState(1); // Estado local para controlar la cantidad
-  const [alertWarning, setAlertWarning] = useState(false);
-  const [alertSuccess, setAlertSuccess] = useState(false);
-
+  const [alertWarning, setAlertWarning] = useState(false)
+  const [alertSuccess, setAlertSuccess] = useState(false)
+  const navigate = useNavigate();
+  
   const addToCart = () => {
     const { id, nameR, logo } = restaurantToSend;
-    const { name, price, image, idItem } = productSelected;
-
+    const { name, price, image, idItem, cookingTimeMin,cookingTimeMax} = productSelected;
     let orders = JSON.parse(localStorage.getItem("orders")) || [];
-    let newOrders = []; //Array vacio en caso de que ya exita un pedido para el restaurante seleccionado
+    let newOrders = [];//Array vacio en caso de que ya exita un pedido para el restaurante seleccionado
     // Buscamos si ya hay un pedido con el mismo id de restaurante
-    let existingOrder = orders.find((order) => order.id === id);
+    let existingOrder = orders.find(order => order.id === id);
 
     if (existingOrder) {
-      setAlertSuccess(true); //muestra un mensaje de exito
+      
+      setAlertSuccess(true)//muestra un mensaje de exito
 
       // Restablece el valor de alertWarning a false después de 2 segundos
       setTimeout(() => {
         setAlertSuccess(false);
         navigate("/restaurant");
+
       }, 2000);
       // Si ya existe un pedido para este restaurante, agregamos el nuevo plato a su arreglo de platos
-      let existingDish = existingOrder.dishes.find(
-        (dish) => dish.id === idItem
-      );
+      let existingDish = existingOrder.dishes.find(dish => dish.id === idItem);
 
       if (existingDish) {
         // Si ya existe el mismo plato, actualizamos la cantidad
@@ -43,12 +41,17 @@ const Product = () => {
           name: name,
           price: price,
           image: image,
+          cookingTimeMin: cookingTimeMin,
+          cookingTimeMax: cookingTimeMax
         });
       }
     } else {
       // Si no existe un pedido para este restaurante, creamos uno nuevo
-      localStorage.clear();
-      setAlertWarning(true); //muestra un mensaje de advertencia
+      localStorage.removeItem("orders");
+      localStorage.removeItem("total");
+      localStorage.removeItem("totalItems");
+      setpayCheck(false);
+      setAlertWarning(true)//muestra un mensaje de advertencia
 
       // Restablece el valor de alertWarning a false después de 2 segundos
       setTimeout(() => {
@@ -60,39 +63,40 @@ const Product = () => {
         id: id,
         name: nameR,
         logo: logo,
-        dishes: [
-          {
-            id: idItem,
-            quantity: quantity,
-            name: name,
-            price: price,
-            image: image,
-          },
-        ],
+        dishes: [{
+          id: idItem,
+          quantity: quantity,
+          name: name,
+          price: price,
+          image: image,
+          cookingTimeMin: cookingTimeMin,
+          cookingTimeMax: cookingTimeMax
+        }]
       });
       orders = newOrders;
+
     }
 
     // Almacenamos el arreglo actualizado en el localStorage
     localStorage.setItem("orders", JSON.stringify(orders));
 
     // Recalculamos el total después de agregar o actualizar un pedido
-    const total = calculateTotal(orders.filter((order) => order.id === id));
-    localStorage.setItem("total", JSON.stringify(total));
-  };
+    const total = calculateTotal(orders.filter(order => order.id === id));
+    localStorage.setItem('total', JSON.stringify(total));
+  }
 
   const handleQuantityChange = (amount) => {
     if (amount === -1 && quantity === 1) {
       setQuantity(1);
     } else {
-      setQuantity((prevQuantity) => prevQuantity + amount); // Actualiza el estado local de la cantidad
+      setQuantity(prevQuantity => prevQuantity + amount); // Actualiza el estado local de la cantidad
     }
   };
 
   const calculateTotal = (orders) => {
     let total = 0;
-    orders.forEach((order) => {
-      order.dishes.forEach((dish) => {
+    orders.forEach(order => {
+      order.dishes.forEach(dish => {
         total += dish.price * dish.quantity;
       });
     });
@@ -101,13 +105,11 @@ const Product = () => {
 
   const updateOrderTotal = () => {
     let orders = JSON.parse(localStorage.getItem("orders")) || [];
-    let totalItems = orders.reduce(
-      (acc, order) =>
-        acc + order.dishes.reduce((acc, dish) => acc + dish.quantity, 0),
-      0
-    );
+    let totalItems = orders.reduce((acc, order) => acc + order.dishes.reduce((acc, dish) => acc + dish.quantity, 0), 0);
     localStorage.setItem("totalItems", totalItems);
   };
+  
+
   return (
     <div className="flex flex-col w-screen h-screen items-center">
       {alertSuccess && (
