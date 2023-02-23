@@ -22,8 +22,8 @@ const CurrentOrder = () => {
 
   return (
     <div className="flex flex-col w-screen h-screen justify-center items-center pb-32 pl-2 pr-2 pt-2 md:grid md:grid-cols-2 md:gap-5 ">
-      <div className="flex flex-col items-center justify-center w-full">
-        <h1 className="text-2xl mb-1">Current order</h1>
+      <div className="flex flex-col items-center justify-center w-full mt-10">
+        <h1 className="text-2xl mb-1 sm:mb-3">Current order</h1>
         <img
           src="https://res.cloudinary.com/dxwzyjefd/image/upload/v1677011767/sprint4/gui-images/time.png"
           alt="Time order"
@@ -72,22 +72,26 @@ const CurrentOrder = () => {
             return (
               <div
                 key={dish.id}
-                className="flex justify-center items-center mb-1 gap-5"
+                className="flex justify-center items-center mb-1 gap-5 sm:justify-start"
               >
                 <img
                   src={dish.image}
                   alt="Product image"
-                  className="w-18 h-12 rounded-lg"
+                  className="w-18 h-12 rounded-lg sm:w-24 sm:h-14"
                 />
-                <p className="text-sm text-gray-500">x{dish.quantity}</p>
-                <p className="font-bold mb-1">{dish.name}</p>
-                <p className="text-xs mb-1">${dish.price * dish.quantity}</p>
+                <p className="text-sm text-gray-500 sm:text-base">
+                  x{dish.quantity}
+                </p>
+                <p className="font-bold text-sm mb-1 sm:text-lg">{dish.name}</p>
+                <p className="text-xs mb-1 sm:text-base">
+                  ${dish.price * dish.quantity}
+                </p>
               </div>
             );
           });
         })}
       </div>
-      <div className="w-full h-28 flex flex-col justify-center pl-2 pr-2 fixed bottom-3">
+      <div className="flex flex-col w-full h-28  justify-center pl-2 pr-2 fixed bottom-3 sm:static sm:w-full ">
         <div className="flex flex-row justify-between w-full mb-1 md:mb-0">
           <p className="text-sm font-bold">Products</p>
           <p className="text-sm font-bold">{total}$</p>
@@ -104,7 +108,7 @@ const CurrentOrder = () => {
 
         <button
           onClick={handleClick}
-          className="w-full bg-yellow-1000 text-black py-2 px-4 rounded-xl pr-2 pl-2 md:w-auto md:mt-0"
+          className="w-full bg-yellow-1000 text-black py-2 px-4 rounded-xl pr-2 pl-2 md:w-full sm:mt-3"
         >
           Go Home
         </button>
