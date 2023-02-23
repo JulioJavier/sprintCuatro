@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth, db } from "../api/firebase";
-import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, getDoc, setDoc, query, where } from "firebase/firestore"
-
+import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, getDoc, setDoc, query, where, updateDoc, arrayUnion } from "firebase/firestore"
+import { useAuth } from "./AuthContext";
 // Contexto
 const dataContext = createContext();
 
@@ -13,16 +13,16 @@ export const useData = () => {
 }
 
 export function DataProvider({ children }) {
-    /*     const [data, setData] = useState({})// Estado de los datos
-     *//*     const [loading, setLoading] = useState(true)// Estado de carga
- */
+    // Creamos una variable de estado para almacenar la información de la base de datos
     const [dbFirestore, setDbFirestore] = useState([])
     // Creamos una variable de estado adicional para almacenar la información actualizada
     const [updatedDbFirestore, setUpdatedDbFirestore] = useState([]);
 
+    const { user } = useAuth(); // lo usaremos para editar la información de la base de datos    
+
     const saveData = async (data) => {
         try {
-            await addDoc(collection(db, "restaurant"), data);
+            await addDoc(collection(db, "delivery"), data);
         } catch (error) {
             console.log(error);
         }
@@ -30,7 +30,7 @@ export function DataProvider({ children }) {
 
     const updateData = async (id, data) => {
         try {
-            await setDoc(doc(db, "restaurant", id), data);
+            await setDoc(doc(db, "delivery", id), data);
         } catch (error) {
             console.log(error);
         }
@@ -38,7 +38,7 @@ export function DataProvider({ children }) {
 
     /*     const getRestaurant = async (id) => {
             try {
-                const docRef = doc(db, "restaurant", id);
+                const docRef = doc(db, "delivery", id);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                     return docSnap.data();
@@ -52,7 +52,7 @@ export function DataProvider({ children }) {
 
     const findCategory = async (category) => {
         // Create a reference to the restaurant collection
-        const restaurantRef = collection(db, "restaurant");
+        const restaurantRef = collection(db, "delivery");
 
         // Create a query against the collection
         const q = query(restaurantRef, where("food-categories", "array-contains", category));
@@ -67,7 +67,7 @@ export function DataProvider({ children }) {
     const findDishCategory = async (_category) => {
         console.log(_category);
         // Create a reference to the restaurant collection
-        const restaurantRef = collection(db, "restaurant");
+        const restaurantRef = collection(db, "delivery");
         const q = query(restaurantRef, where('menu', 'array-contains', { category: "pizza" }))
 
         // Get the documents that match the query
@@ -79,13 +79,41 @@ export function DataProvider({ children }) {
         
     }
 
+    const setOrderToFirestore = async (data) => {
+        const docRef = doc(db, 'users', user.uid);
+        try {
+          await updateDoc(docRef, {
+            orders: arrayUnion(data)
+          });
+          console.log('El campo fue actualizado exitosamente.');
+        } catch (error) {
+          console.error('Error al actualizar el campo:', error);
+        }
+      };
+
+      const getOrdersFromFirestore = async () => {
+        const docRef = doc(db, 'users', user.uid);
+        try {
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const orders = docSnap.get('orders');
+            return orders;
+          } else {
+            console.log('No se encontró el documento en Firestore');
+            return null;
+          }
+        } catch (error) {
+          console.error('Error al obtener datos de Firestore:', error);
+          return null;
+        }
+      };
 
 
 
     useEffect(() => {
         const getDbFirestore = async () => {
             try {
-                const querySnapshot = await getDocs(collection(db, "restaurant"));
+                const querySnapshot = await getDocs(collection(db, "delivery"));
                 const docs = []
                 querySnapshot.forEach((doc) => {
                     docs.push({ ...doc.data(), id: doc.id })
@@ -107,10 +135,11 @@ export function DataProvider({ children }) {
                 updatedDbFirestore,
                 findCategory,
                 findDishCategory,
+                setOrderToFirestore,
+                getOrdersFromFirestore,
             }}
         >
             {children}
         </dataContext.Provider>
-    );
+    );
 }
-

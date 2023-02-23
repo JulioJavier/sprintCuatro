@@ -33,9 +33,9 @@ const Register = () => {
         case "auth/email-already-in-use":
           setError("e-mail is already in use");
           break;
-          default:
-            setError("Incorrect email or password");
-            break;
+        default:
+          setError("Incorrect email or password");
+          break;
       }
     }
   };

@@ -19,7 +19,7 @@ export default function Carousel({
   });
 
   return (
-    <div className="overflow-hidden relative w-screen h-44">
+    <div className="overflow-hidden relative w-screen h-36">
       <div
         className="flex transition-transform ease-out duration-500 "
         style={{ transform: `translateX(-${curr * 100}%)` }}
@@ -27,7 +27,7 @@ export default function Carousel({
         {imgCarousel.map((s, index) => (
           <img
             key={index}
-            className="object-cover w-full h-44 rounded-xl mr-1"
+            className="object-cover w-full h-36 rounded-xl mr-1"
             src={s}
             alt={`Slide ${index}`}
           />

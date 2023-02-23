@@ -4,52 +4,52 @@ import { useInfo } from "../context/HandleInfoContext";
 import { useNavigate } from "react-router-dom";
 import StarRating from "./StartRating";
 
-const RestaurantCard = () => {
-  const { saveData, updatedDbFirestore, findCategory } = useData();
+const RestaurantCard = ({ category }) => {
+  const { updatedDbFirestore } = useData();
   const { setRestaurantSelected } = useInfo();
   const navigate = useNavigate();
-  /*     //USando Query  
-    const prueba = async () => {
-        console.log(await findCategory("snacks"));
-    }
-    prueba()
-    console.log(updatedDbFirestore);
-     */
 
-  const handleClick = (restaurant) => {
+  function handleClick(restaurant) {
     setRestaurantSelected(restaurant);
     navigate("/restaurant");
-  };
+  }
 
-  return (
-    <div className="h-96 w-screen overflow-x-scroll p-2">
-      {updatedDbFirestore &&
-        Object.keys(updatedDbFirestore).map((key) => {
-          return (
-            <div
-              className="flex w-full h-32 mt-2 p-2 gap-2"
-              onClick={() => handleClick(updatedDbFirestore[key])}
-              key={key}
-            >
-              <div className="w-36 h-full">
-                <img
-                  className="w-full h-full rounded-xl"
-                  src={updatedDbFirestore[key].banner}
-                  alt=""
-                />
-              </div>
-              <div className="flex flex-col justify-center">
-                <h5>{updatedDbFirestore[key].name}</h5>
-                <StarRating
-                  rating={updatedDbFirestore[key].stars}
-                  maxStars={5}
-                />
-                <p>{updatedDbFirestore[key].schedule}</p>
-              </div>
-            </div>
+  function getRestaurantsToRender() {
+    const restaurants =
+      category === "all" || category === ""
+        ? Object.values(updatedDbFirestore)
+        : Object.values(updatedDbFirestore).filter((obj) =>
+            obj["food-categories"].includes(category)
           );
-        })}
-      <h1></h1>
+    return restaurants.map((restaurant) => (
+<div
+  onClick={() => handleClick(restaurant)}
+  key={restaurant.id}
+  className="flex flex-col sm:flex-row m-4 p-4 rounded-lg shadow-md cursor-pointer max-w-sm sm:max-w-md lg:max-w-lg"
+>
+  <div className="relative w-full sm:w-48 h-full rounded-l-lg sm:rounded-r-none overflow-hidden">
+    <img
+      src={restaurant.banner}
+      alt=""
+      className="object-cover w-full h-full"
+    />
+  </div>
+  <div className="flex flex-col justify-between flex-1 p-4 bg-white rounded-r-lg sm:rounded-l-none">
+    <div>
+      <h1 className="text-xl font-bold mb-2">{restaurant.name}</h1>
+      <div className="flex justify-between mb-2">
+        <StarRating rating={restaurant.stars} maxStars={5} />
+        <h1 className="text-sm font-medium">{restaurant.schedule}</h1>
+      </div>
+      <p className="text-sm">{restaurant.description}</p>
+    </div>
+  </div>
+</div>
+    ));
+  }
+  return (
+    <div className="flex flex-wrap justify-center">
+      {getRestaurantsToRender()}
     </div>
   );
 };

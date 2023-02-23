@@ -17,7 +17,20 @@ const Login = () => {
       await login(user.email, user.password);
       navigate("/");
     } catch (error) {
-      setError(error.message);
+      switch (error.code) {
+        case "auth/invalid-email":
+          setError("Invalid Mail");
+          break;
+        case "auth/weak-password":
+          setError("Invalid Password");
+          break;
+        case "auth/email-already-in-use":
+          setError("e-mail is already in use");
+          break;
+          default:
+            setError("Incorrect email or password");
+            break;
+      }
     }
   };
 
@@ -29,7 +42,20 @@ const Login = () => {
       await loginWithGoogle();
       navigate("/");
     } catch (error) {
-      setError(error.message);
+      switch (error.code) {
+        case "auth/invalid-email":
+          setError("Invalid Mail");
+          break;
+        case "auth/weak-password":
+          setError("Invalid Password");
+          break;
+        case "auth/email-already-in-use":
+          setError("e-mail is already in use");
+          break;
+          default:
+            setError("Incorrect email or password");
+            break;
+      }
     }
   };
   const handleFacebookSignin = async () => {
