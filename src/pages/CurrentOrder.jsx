@@ -94,16 +94,16 @@ const CurrentOrder = () => {
       <div className="flex flex-col w-full h-28  justify-center pl-2 pr-2 fixed bottom-3 sm:static sm:w-full ">
         <div className="flex flex-row justify-between w-full mb-1 md:mb-0">
           <p className="text-sm font-bold">Products</p>
-          <p className="text-sm font-bold">{total}$</p>
+          <p className="text-sm font-bold">${total}</p>
         </div>
         <div className="flex justify-between w-full mb-1 md:mb-0">
           <p className="text-sm font-bold">Delivery</p>
-          <p className="text-sm font-bold">5000$</p>
+          <p className="text-sm font-bold">$3</p>
         </div>
         <hr className="w-full border-1 border-black mb-1" />
         <div className="flex justify-between w-full  md:mb-0">
           <p className="text-sm font-bold">Total</p>
-          <p className="text-sm font-bold">FALTA TOTAL</p>
+          <p className="text-sm font-bold">${parseInt(total) + 3}</p>
         </div>
 
         <button
